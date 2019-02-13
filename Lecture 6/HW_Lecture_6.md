@@ -1,14 +1,13 @@
----
-title: "Lecture 6. Homework"
-author: "Simon Midtvedt"
-date: "Jan 25th, 2019"
-output: github_document
----
+Lecture 6. Homework
+================
+Simon Midtvedt
+Jan 25th, 2019
 
-### Q6. How would you generalize the original code above to work with any set of input protein structures? 
+### Q6. How would you generalize the original code above to work with any set of input protein structures?
 
 Function:
-```{r}
+
+``` r
 library(bio3d) # accessing the bio3d package
 
 # Create the function with inputs: file (pdb structure file), chain (optional), elety (optional)
@@ -28,8 +27,28 @@ plotprot <- function(file, chain = "A", elety = "CA") { # chain and elety can be
 ```
 
 Running the function with different proteins:
-```{r}
+
+``` r
 plotprot("4AKE")
+```
+
+    ##   Note: Accessing on-line PDB file
+
+![](HW_Lecture_6_files/figure-markdown_github/unnamed-chunk-2-1.png)
+
+``` r
 plotprot("1AKE")  
+```
+
+    ##   Note: Accessing on-line PDB file
+    ##    PDB has ALT records, taking A only, rm.alt=TRUE
+
+![](HW_Lecture_6_files/figure-markdown_github/unnamed-chunk-2-2.png)
+
+``` r
 plotprot("1E4Y") 
 ```
+
+    ##   Note: Accessing on-line PDB file
+
+![](HW_Lecture_6_files/figure-markdown_github/unnamed-chunk-2-3.png)
