@@ -1,4 +1,4 @@
-Lecture 5 Graphics and plots with R
+Lecture 5. Graphics and Plots with R
 ================
 Simon Midvtedt
 Jan 23rd, 2019
