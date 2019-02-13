@@ -1,0 +1,83 @@
+---
+title: "Lecture 7 Functions and Packages"
+author: "Simon Midtvedt"
+date: "1/30/2019"
+output: html_document
+---
+
+### Funcions revisited
+
+Load (i.e. **source**) our rescale() funcion from last day.
+
+```{r}
+source("http://tinyurl.com/rescale-R")
+```
+
+Test this function
+
+```{r}
+rescale(1:5)
+```
+
+```{r}
+rescale(c(1:5, "string"))
+```
+
+We want to make this function more 
+
+```{r}
+rescale2(c(1:5, "string"))
+```
+
+Now we want to make a function that finds NAs on the same spot in two vectors. We will start with forgetting about the function and focus on the task with an example.
+
+```{r}
+x <- c(1, 2, NA, 3, NA)
+y <- c(NA, 3, NA, 3, 4)
+```
+
+Use Google to find a built-in function that may help
+
+```{r}
+is.na(x)
+is.na(y)
+
+is.na(x) & is.na(y)
+sum(is.na(x) & is.na(y))
+which(is.na(x) & is.na(y))
+```
+
+Now we take the working snippet and make a first function
+
+```{r}
+both_na <- function(x, y) {
+  # Check for NA elements in both input vectors
+  sum(is.na(x) & is.na(y))
+}
+```
+
+```{r}
+both_na(x, y)
+```
+
+```{r}
+x <-  c(NA, NA, NA)
+y1 <- c( 1, NA, NA)
+y2 <- c( 1, NA, NA, NA)
+y3 <- c(1, NA, NA, NA, NA)
+```
+
+```{r}
+# What will this return?
+both_na(x, y3)
+```
+
+```{r}
+both_na2(x, y)
+```
+
+```{r}
+both_na3(x, y)
+```
+
+

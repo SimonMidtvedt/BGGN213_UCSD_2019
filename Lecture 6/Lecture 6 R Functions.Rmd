@@ -1,0 +1,163 @@
+---
+title: "Lecture 6 R Functions"
+author: "Simon Midtvedt"
+date: "Jan 25th, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### File reading (again!)
+
+Here we try to use **read.table()** and friends to input som example data into R.
+
+```{r}
+data1 <- read.csv("test1.txt")
+data2 <- read.table("test2.txt", sep = "$", header = T)
+data3 <- read.table("test3.txt")
+```
+
+## Hands-on Worksheet
+
+### Section 1: Improving analysis code by writing functions
+### **A.** Can you improve this analysis code?
+
+```{r}
+df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
+df$a <- (df$a - min(df$a)) / (max(df$a) - min(df$a))
+df$b <- (df$b - min(df$a)) / (max(df$b) - min(df$b))
+df$c <- (df$c - min(df$c)) / (max(df$c) - min(df$c))
+df$d <- (df$d - min(df$d)) / (max(df$a) - min(df$d))
+```
+
+Optimalization 1: 
+```{r}
+df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
+normalize <- function(x){
+  x <- (x - min(x)) / (max(x) - min(x))}
+df$a <- normalize(df$a)
+df$b <- normalize(df$b)
+df$c <- normalize(df$c)
+```
+
+Optimalization 2:
+```{r}
+df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
+normalize <- function(x){
+  xmin <- min(x)
+  x <- (x - xmin) / (max(x) - xmin)}
+df$a <- normalize(df$a)
+df$b <- normalize(df$b)
+df$c <- normalize(df$c)
+```
+
+Optimalization 3:
+```{r}
+df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
+normalize <- function(x){
+  rng <- range(x)
+  x <- (x - rng[1]) / (rng[2] - rng[1])}
+df$a <- normalize(df$a)
+df$b <- normalize(df$b)
+df$c <- normalize(df$c)
+```
+
+Optimalization 4:
+```{r}
+df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
+rescale <- function(x, na.rm = T, plot = F){
+  if (na.rm) {
+    rng <- range(x, na.rm = na.rm)
+  } else {
+    rng <- range(x)
+  }
+  print("Hello")
+  
+  answer <- (x - rng[1]) / (rng[2] - rng[1])
+  
+  print("is it me you are looking for")
+  
+  if(plot) {
+    plot(answer, typ = "b", lwd = 4)
+  }
+  print("I can see it in...")
+  
+return(answer)
+  }
+```
+
+Calling the finalized function:
+```{r}
+df$a <- rescale(df$a, plot = T)
+df$b <- rescale(df$b, plot = T)
+df$c <- rescale(df$c, plot = T)
+df$d <- rescale(df$d, na.rm = F)
+```
+
+### **B.** Can you improve this analysis code?
+```{r}
+library(bio3d)
+
+s1 <- read.pdb("4AKE")  # kinase with drug
+s2 <- read.pdb("1AKE")  # kinase no drug
+s3 <- read.pdb("1E4Y")  # kinase with drug
+
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
+
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+Optimalization 1:
+```{r}
+library(bio3d)
+
+s1 <- read.pdb("4AKE")  # kinase with drug
+s2 <- read.pdb("1AKE")  # kinase no drug
+s3 <- read.pdb("1E4Y")  # kinase with drug
+
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s3, chain="A", elety="CA")
+
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+points(s2.b, sse=s2.chainA, col="red",typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+Function:
+```{r}
+library(bio3d) # accessing the bio3d package
+
+# Creating the function with inputs file (pdb structure file), chain (optional), elety (optional)
+plotprot <- function(file, chain = "A", elety = "CA") { # chain and elety can be specified
+  s <- read.pdb(file) # reads the protein databank file
+  s.chain <- trim.pdb(s, chain = chain, elety = elety) # filters out the given chains and atoms in the pdb file using the trim function
+  s.b <- s.chain$atom$b # selects the [b] vector from the [atom] dataframe within the selected chain. Bfactor represents isotropic displacement.
+  
+  plotb3(s.b, sse=s.chain, typ="l", ylab="Bfactor", main=file) # plot with secondary structure objects (sse)
+}
+```
+
+Running the function with different proteins:
+```{r}
+plotprot("4AKE")
+plotprot("1AKE")  
+plotprot("1E4Y") 
+```
+
+
