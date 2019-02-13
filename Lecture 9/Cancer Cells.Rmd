@@ -2,7 +2,7 @@
 title: "Unsupervised Learning Analysis of Human Breast Cancer Cells"
 author: "Simon Midtvedt"
 date: "2/8/2019"
-output: html_document
+output: github_document
 ---
 
 ## 1. Preparing the Data
