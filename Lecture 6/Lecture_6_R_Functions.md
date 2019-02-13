@@ -1,30 +1,26 @@
----
-title: "Lecture 6. R Functions"
-author: "Simon Midtvedt"
-date: "Jan 25th, 2019"
-output: github_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+Lecture 6. R Functions
+================
+Simon Midtvedt
+Jan 25th, 2019
 
 ### File reading (again!)
 
 Here we try to use **read.table()** and friends to input som example data into R.
 
-```{r}
+``` r
 data1 <- read.csv("test1.txt")
 data2 <- read.table("test2.txt", sep = "$", header = T)
 data3 <- read.table("test3.txt")
 ```
 
-## Hands-on Worksheet
+Hands-on Worksheet
+------------------
 
 ### Section 1: Improving analysis code by writing functions
+
 ### **A.** Can you improve this analysis code?
 
-```{r}
+``` r
 df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
 df$a <- (df$a - min(df$a)) / (max(df$a) - min(df$a))
 df$b <- (df$b - min(df$a)) / (max(df$b) - min(df$b))
@@ -32,8 +28,9 @@ df$c <- (df$c - min(df$c)) / (max(df$c) - min(df$c))
 df$d <- (df$d - min(df$d)) / (max(df$a) - min(df$d))
 ```
 
-Optimalization 1: 
-```{r}
+Optimalization 1:
+
+``` r
 df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
 normalize <- function(x){
   x <- (x - min(x)) / (max(x) - min(x))}
@@ -43,7 +40,8 @@ df$c <- normalize(df$c)
 ```
 
 Optimalization 2:
-```{r}
+
+``` r
 df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
 normalize <- function(x){
   xmin <- min(x)
@@ -54,7 +52,8 @@ df$c <- normalize(df$c)
 ```
 
 Optimalization 3:
-```{r}
+
+``` r
 df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
 normalize <- function(x){
   rng <- range(x)
@@ -65,7 +64,8 @@ df$c <- normalize(df$c)
 ```
 
 Optimalization 4:
-```{r}
+
+``` r
 df <- data.frame(a=1:10, b=seq(200,400,length=10),c=11:20,d=NA)
 rescale <- function(x, na.rm = T, plot = F){
   if (na.rm) {
@@ -89,21 +89,72 @@ return(answer)
 ```
 
 Calling the finalized function:
-```{r}
+
+``` r
 df$a <- rescale(df$a, plot = T)
+```
+
+    ## [1] "Hello"
+    ## [1] "is it me you are looking for"
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
+    ## [1] "I can see it in..."
+
+``` r
 df$b <- rescale(df$b, plot = T)
+```
+
+    ## [1] "Hello"
+    ## [1] "is it me you are looking for"
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-7-2.png)
+
+    ## [1] "I can see it in..."
+
+``` r
 df$c <- rescale(df$c, plot = T)
+```
+
+    ## [1] "Hello"
+    ## [1] "is it me you are looking for"
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-7-3.png)
+
+    ## [1] "I can see it in..."
+
+``` r
 df$d <- rescale(df$d, na.rm = F)
 ```
 
+    ## [1] "Hello"
+    ## [1] "is it me you are looking for"
+    ## [1] "I can see it in..."
+
 ### **B.** Can you improve this analysis code?
-```{r}
+
+``` r
 library(bio3d)
 
 s1 <- read.pdb("4AKE")  # kinase with drug
-s2 <- read.pdb("1AKE")  # kinase no drug
-s3 <- read.pdb("1E4Y")  # kinase with drug
+```
 
+    ##   Note: Accessing on-line PDB file
+
+``` r
+s2 <- read.pdb("1AKE")  # kinase no drug
+```
+
+    ##   Note: Accessing on-line PDB file
+    ##    PDB has ALT records, taking A only, rm.alt=TRUE
+
+``` r
+s3 <- read.pdb("1E4Y")  # kinase with drug
+```
+
+    ##   Note: Accessing on-line PDB file
+
+``` r
 s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
 s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
 s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
@@ -113,18 +164,59 @@ s2.b <- s2.chainA$atom$b
 s3.b <- s3.chainA$atom$b
 
 plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+```
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+``` r
 plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+```
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-8-2.png)
+
+``` r
 plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
 ```
 
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-8-3.png)
+
 Optimalization 1:
-```{r}
+
+``` r
 library(bio3d)
 
 s1 <- read.pdb("4AKE")  # kinase with drug
-s2 <- read.pdb("1AKE")  # kinase no drug
-s3 <- read.pdb("1E4Y")  # kinase with drug
+```
 
+    ##   Note: Accessing on-line PDB file
+
+    ## Warning in get.pdb(file, path = tempdir(), verbose = FALSE): /var/folders/
+    ## wf/g31bmb9x3xb2xwwyxhl68n8c0000gn/T//RtmpSnfmxr/4AKE.pdb exists. Skipping
+    ## download
+
+``` r
+s2 <- read.pdb("1AKE")  # kinase no drug
+```
+
+    ##   Note: Accessing on-line PDB file
+
+    ## Warning in get.pdb(file, path = tempdir(), verbose = FALSE): /var/folders/
+    ## wf/g31bmb9x3xb2xwwyxhl68n8c0000gn/T//RtmpSnfmxr/1AKE.pdb exists. Skipping
+    ## download
+
+    ##    PDB has ALT records, taking A only, rm.alt=TRUE
+
+``` r
+s3 <- read.pdb("1E4Y")  # kinase with drug
+```
+
+    ##   Note: Accessing on-line PDB file
+
+    ## Warning in get.pdb(file, path = tempdir(), verbose = FALSE): /var/folders/
+    ## wf/g31bmb9x3xb2xwwyxhl68n8c0000gn/T//RtmpSnfmxr/1E4Y.pdb exists. Skipping
+    ## download
+
+``` r
 s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
 s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
 s3.chainA <- trim.pdb(s3, chain="A", elety="CA")
@@ -135,12 +227,28 @@ s3.b <- s3.chainA$atom$b
 
 plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
 points(s2.b, sse=s2.chainA, col="red",typ="l", ylab="Bfactor")
+```
+
+    ## Warning in plot.xy(xy.coords(x, y), type = type, ...): "sse" is not a
+    ## graphical parameter
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+``` r
 plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+```
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-9-2.png)
+
+``` r
 plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
 ```
 
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-9-3.png)
+
 Function:
-```{r}
+
+``` r
 library(bio3d) # accessing the bio3d package
 
 # Creating the function with inputs file (pdb structure file), chain (optional), elety (optional)
@@ -154,10 +262,41 @@ plotprot <- function(file, chain = "A", elety = "CA") { # chain and elety can be
 ```
 
 Running the function with different proteins:
-```{r}
+
+``` r
 plotprot("4AKE")
+```
+
+    ##   Note: Accessing on-line PDB file
+
+    ## Warning in get.pdb(file, path = tempdir(), verbose = FALSE): /var/folders/
+    ## wf/g31bmb9x3xb2xwwyxhl68n8c0000gn/T//RtmpSnfmxr/4AKE.pdb exists. Skipping
+    ## download
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-11-1.png)
+
+``` r
 plotprot("1AKE")  
+```
+
+    ##   Note: Accessing on-line PDB file
+
+    ## Warning in get.pdb(file, path = tempdir(), verbose = FALSE): /var/folders/
+    ## wf/g31bmb9x3xb2xwwyxhl68n8c0000gn/T//RtmpSnfmxr/1AKE.pdb exists. Skipping
+    ## download
+
+    ##    PDB has ALT records, taking A only, rm.alt=TRUE
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-11-2.png)
+
+``` r
 plotprot("1E4Y") 
 ```
 
+    ##   Note: Accessing on-line PDB file
 
+    ## Warning in get.pdb(file, path = tempdir(), verbose = FALSE): /var/folders/
+    ## wf/g31bmb9x3xb2xwwyxhl68n8c0000gn/T//RtmpSnfmxr/1E4Y.pdb exists. Skipping
+    ## download
+
+![](Lecture_6_R_Functions_files/figure-markdown_github/unnamed-chunk-11-3.png)
