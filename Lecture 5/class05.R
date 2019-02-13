@@ -1,5 +1,5 @@
 #' ---
-#' title: "Lecture 5 Graphics and plots with R"
+#' title: "Lecture 5. Graphics and Plots with R"
 #' author: "Simon Midvtedt"
 #' date: "Jan 23rd, 2019"
 #' output: github_document
