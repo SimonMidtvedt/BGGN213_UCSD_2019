@@ -1,0 +1,44 @@
+---
+title: "Lecture 12. Structural Bioinformatics (Part 2)"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Get PDB file
+```{r}
+library(bio3d)
+file.name <- get.pdb("1hsg")
+hiv <- read.pdb(file.name)
+```
+
+### Extract protein only and ligand only segments and write a new PDB file
+```{r}
+prot <- trim.pdb(hiv, "protein")
+#prot.filename <- paste(file.name, "_protein.pdb", sep="")
+lig <- trim.pdb(hiv, "ligand")
+
+write.pdb(prot, "1hsg_protein.pdb")
+write.pdb(lig, "1hsg_ligand.pdb")
+```
+
+### Convert docking results for viewing in VMD
+
+```{r}
+res <- read.pdb("all.pdbqt", multi = TRUE)
+write.pdb(res, "results.pdb")
+```
+
+### Calculate RMSD for qualitative analysis of results
+```{r}
+ori <- read.pdb("1hsg_ligand.pdbqt")
+rmsd(ori, res)
+```
+
+
+
+
+
+
