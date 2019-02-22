@@ -1,0 +1,56 @@
+---
+title: "Lecture 13. Genome Informatics"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### What percentage of MXL are G|G 
+```{r}
+mxl <- read.csv("373531-SampleGenotypes-Homo_sapiens_Variation_Sample_rs8067378.csv")
+head(mxl)
+table(mxl$Genotype..forward.strand.) / nrow(mxl)
+```
+
+### FASTQ Quality scores
+
+```{r}
+library(seqinr)
+library(gtools)
+```
+
+```{r}
+chars <- s2c("DDDDCDEDCDDDDBBDDDCC@")
+phred <- asc(chars) - 33
+```
+
+### Populaion Scale Analysis
+```{r}
+expr <- read.table("rs8067378_ENSG00000172057.6.txt")
+table(expr$geno)
+```
+
+```{r}
+gg <- expr$exp[expr$geno == "G/G"]
+aa <- expr$exp[expr$geno == "A/A"]
+ag <- expr$exp[expr$geno == "A/G"]
+summary(gg)
+summary(aa)
+summary(ag)
+```
+
+```{r}
+boxplot(gg)
+boxplot(aa)
+boxplot(ag)
+```
+
+
+
+
+
+
+
+
