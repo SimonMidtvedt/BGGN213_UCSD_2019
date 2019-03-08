@@ -1,0 +1,97 @@
+---
+title: "Lecture 18. Cancer Genomics"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Section 1. Protein sequences from healthy and tumor tissue
+
+```{r}
+library(bio3d)
+```
+
+## Read provided aligned fasta sequence
+```{r}
+seqs <- read.fasta("lecture18_sequences.fa")
+```
+File is already aligned, hence the following step is unnecessary:
+
+```{r}
+#seq <- seqaln(seqs)
+```
+
+## Find cancer specific sites of mutation and extract 9-mers
+```{r}
+# Identify identities 
+ide <- conserv(seqs$ali, method = "identity")
+
+# Mutants are sites where identity is not equal to 1
+mutant.sites2 <- which(ide  < 1)
+
+# Find gaps in alignment and exclude them 
+gaps <- gap.inspect(seqs)
+mutant.sites <- mutant.sites2[mutant.sites2 %in% gaps$f.inds]
+
+# Label the mutations
+mutant.names <- paste0(seqs$ali["P53_wt", mutant.sites], mutant.sites, seqs$ali["P53_mutant", mutant.sites])
+
+# 8 residues before and after to create 9-mer
+start.postion <- mutant.sites - 8
+end.postion <- mutant.sites + 8
+
+# Blank matrix to insert  9-mers
+store.seqs <- matrix("-", nrow = length(mutant.sites), ncol = 17)
+rownames(store.seqs) = mutant.names
+
+# Extract 8 residues before and after each mutant site
+for (i in 1:length(mutant.sites)) {
+  store.seqs[i,] <- seqs$ali["P53_mutant", start.postion[i] : end.postion[i]]
+}
+
+# Blank out gap positions
+store.seqs[store.seqs == "-"] <-  ""
+
+# Output FASTA file for further analysis
+write.fasta(seqs = store.seqs, ids = mutant.names, file = "subsequences.fa")
+```
+
+# Section 2. Patient HLA typing results and HLA binding prediction
+
+```{r}
+csv <- read.csv("result.csv")
+```
+
+```{r}
+A0201 <- csv$peptide[ csv$allele == levels(csv$allele)[1] ]
+A6801 <- csv$peptide[ csv$allele == levels(csv$allele)[2] ]
+AB0702 <- csv$peptide[ csv$allele == levels(csv$allele)[3] ] 
+B3501 <- csv$peptide[ csv$allele == levels(csv$allele)[4] ]
+
+A0201[1]
+A6801[1]
+AB0702[1]
+B3501[1]
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

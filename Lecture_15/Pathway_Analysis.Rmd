@@ -1,0 +1,64 @@
+---
+title: "Lecture 15. Pathway Analysis from RNA-Seq Results"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE}
+library(DESeq2)
+```
+
+```{r}
+metaFile <- "Data/GSE37704_metadata.csv"
+countFile <- "Data/GSE37704_featurecounts.csv"
+
+# Import metadata and take a peak
+colData = read.csv(metaFile, row.names=1)
+head(colData)
+
+# Import countdata
+countData = read.csv(countFile, row.names=1)
+head(countData)
+```
+
+```{r}
+# Note we need to remove the odd first $length col
+countData <- as.matrix(countData[,-1])
+head(countData)
+```
+
+```{r}
+all(rownames(colData) == colnames(countData2))
+```
+
+
+```{r filtering_zero_count_genes}
+countData = countData[rowSums(countData)!=0, ]
+head(countData)
+```
+
+We now have `nrow(countData)` genes remaining in our dataset.
+
+```{r}
+dds <-  DESeqDataSetFromMatrix(countData = countData,
+                             colData = colData,
+                             design = ~condition)
+dds <- DESeq(dds)
+```
+
+```{r}
+res = results(dds, contrast=c("condition", "hoxa1_kd", "control_sirna"))
+```
+
+```{r}
+summary(res)
+```
+
+
+
+
+
+
