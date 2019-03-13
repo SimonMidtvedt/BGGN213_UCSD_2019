@@ -1,0 +1,162 @@
+---
+title: "Lecture 8. Clustering and PCA introduction"
+author: "Simon Midtvedt"
+date: "2/6/2019"
+output: github_document
+---
+
+### Clustering 
+
+K-means first play
+```{r}
+tmp <- c(rnorm(30,-3), rnorm(30,3))
+x <- cbind(x=tmp, y=rev(tmp))
+
+plot(x)
+```
+
+```{r}
+# k-means algorithm with 2 centers, run 20 times
+km <- kmeans(x, centers = 2, nstart = 20)
+km
+```
+
+Size and Cluster
+```{r}
+km$size
+km$cluster
+```
+
+```{r}
+plot(x, col=km$cluster)
+points(km$centers, col="blue", pch=15, cex=3)
+```
+
+```{r}
+# First we need to calculate point (dis)similarity
+#   as the Euclidean distance between observations
+dist_matrix <- dist(x)
+# The hclust() function returns a hierarchical
+#  clustering model
+hc <- hclust(d = dist_matrix)
+# the print method is not so useful here
+hc
+```
+
+```{r}
+plot(hc)
+abline(h=6, col="red")
+grp2 <- cutree(hc, h=6)
+```
+
+```{r}
+plot(x, col=grp2)
+```
+
+We can also use k = groups
+```{r}
+cutree(hc, k=3)
+```
+
+
+```{r}
+# Step 1. Generate some example data for clustering
+x <- rbind(
+  matrix(rnorm(100, mean=0, sd = 0.3), ncol = 2),   # c1
+  matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2), # c2
+  matrix(c(rnorm(50, mean = 1, sd = 0.3),           # c3
+           rnorm(50, mean = 0, sd = 0.3)), ncol = 2))
+colnames(x) <- c("x", "y")
+# Step 2. Plot the data without clustering
+plot(x)
+# Step 3. Generate colors for known clusters
+#         (just so we can compare to hclust results)
+col <- as.factor( rep(c("c1","c2","c3"), each=50) )
+plot(x, col=col)
+```
+
+Q. Use the dist(), hclust(), plot() and cutree() functions to return 2 and 3 clusters
+Q. How does this compare to your known 'col' groups?
+- Takeaway: Be cautious at boundaries.
+```{r}
+d <- dist(x)
+hc <- hclust(d)
+plot(hc)
+grp2 <- cutree(hc, k=2)
+plot(x, col=grp2)
+grp3 <- cutree(hc, k=3)
+plot(x, col=grp3)
+```
+
+
+### PCA Analysis
+```{r}
+## You can also download this file from the class website!
+mydata <- read.csv("https://tinyurl.com/expression-CSV",
+row.names=1)
+head(mydata)
+```
+
+```{r}
+## lets do PCA
+ pca <- prcomp(t(mydata), scale=TRUE)
+summary(pca)
+```
+
+Make our first PCA plot
+```{r}
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2")
+```
+
+
+
+
+## Hands-on Work
+Q1. How many rows and columns are in your new data frame named x? What R functions could you use to answer this questions?
+Hide
+
+
+```{r}
+x <- read.csv("https://bioboot.github.io/bggn213_W19/class-material/UK_foods.csv")
+## Complete the following code to find out how many rows and columns are in x?
+dim(x)
+## Preview the first 6 rows
+head(x)
+
+rownames(x) <- x[,1]
+x <- x[,-1]
+head(x)
+```
+
+Q2. Which approach to solving the ‘row-names problem’ mentioned above do you prefer and why? Is one approach more robust than another under certain circumstances?
+- This approach is more robust:
+```{r}
+x <- read.csv("https://bioboot.github.io/bggn213_W19/class-material/UK_foods.csv", row.names = 1)
+head(x)
+```
+
+Q3: Changing what optional argument in the above barplot() function results in the following plot?
+```{r}
+barplot(as.matrix(x), beside=F, col=rainbow(nrow(x)))
+```
+
+Q5: Generating all pairwise plots may help somewhat. Can you make sense of the following code and resulting figure? What does it mean if a given point lies on the diagonal for a given plot?
+
+```{r}
+pairs(x, col=rainbow(10), pch=16)
+```
+
+Q6. What is the main differences between N. Ireland and the other countries of the UK in terms of this data-set?
+
+Q7. Complete the code below to generate a plot of PC1 vs PC2. The second line adds text labels over the data points.
+
+```{r}
+pca <- prcomp( t(x) )
+summary(pca)
+```
+```{r}
+# Plot PC1 vs PC2
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x))
+```
+
